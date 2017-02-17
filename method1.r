@@ -6,6 +6,7 @@
 ##read dataset##
 setwd("D:/Biostatistics/MSProject/planB/data")
 dat <- read.csv("dat4Meta.csv")
+# common
 head(dat)
 ##apply r package gmeta and meta;odds ratio as effect measurement##
 datMI=dat[,c("MI.TRT","n.TRT","MI.CTRL","n.CTRL")]
