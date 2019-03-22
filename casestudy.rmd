@@ -1,0 +1,144 @@
+---
+title: "planB-method"
+author: "Yanan Ren"
+date: "2017??5??25??"
+output: word_document
+---
+############################################################
+##Methods of meta-analysis with Rare event##################
+##data:Rosiglitazone, dat4Meta) Death as event#############
+##05/25/2017###############################################
+```{r, echo=FALSE}
+##call packages##
+library(meta)
+library(gmeta)
+##read dataset##
+setwd("D:/Biostatistics/MSProject/planB/data")
+dat <- read.csv("dat4Meta.csv")
+head(dat)
+View(dat)
+##MI dataset##
+datMI=dat[,c("ID","MI.TRT","n.TRT","MI.CTRL","n.CTRL")]
+View(datMI)
+##death dataset##
+datD=dat[,c("ID","Death.TRT","n.TRT","Death.CTRL","n.CTRL")]
+View(datD)
+
+###meta-analysis##
+  ##without double zero studies##
+  meta1<-summary(metabin(Death.TRT, n.TRT, Death.CTRL, n.CTRL, sm="OR", incr=0,method="I",data=datD))
+  meta2<-summary(metabin(Death.TRT, n.TRT, Death.CTRL, n.CTRL, sm="OR", method="I",data=datD))
+  meta3<-summary(metabin(Death.TRT, n.TRT, Death.CTRL, n.CTRL, sm="OR", incr="TACC",method="I",data=datD))
+  meta5<-summary(metabin(Death.TRT, n.TRT, Death.CTRL, n.CTRL, sm="OR", method="MH",data=datD))
+  meta6<-summary(metabin(Death.TRT, n.TRT, Death.CTRL, n.CTRL, sm="OR", incr="TACC",method="MH",data=datD))
+  meta8<-summary(metabin(Death.TRT, n.TRT, Death.CTRL, n.CTRL, sm="OR",  incr=0, method="P",data=datD))
+  ##with double zero studies##
+  #meta1all[[i]]<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", incr=0,allstudies=TRUE,method="I",data=temp))
+  meta2all<-summary(metabin(Death.TRT, n.TRT, Death.CTRL, n.CTRL, sm="OR", allstudies=TRUE,method="I",data=datD))
+  meta3all<-summary(metabin(Death.TRT, n.TRT, Death.CTRL, n.CTRL, sm="OR", incr="TACC",allstudies=TRUE,method="I",data=datD))
+  meta5all<-summary(metabin(Death.TRT, n.TRT, Death.CTRL, n.CTRL, sm="OR", allstudies=TRUE,method="MH",data=datD))
+  meta6all<-summary(metabin(Death.TRT, n.TRT, Death.CTRL, n.CTRL, sm="OR", incr="TACC",allstudies=TRUE,method="MH",data=datD))
+  
+  OR.exact<- summary(gmeta(datD[,c("Death.TRT","n.TRT","Death.CTRL","n.CTRL")], gmi.type='2x2', method='exact1',
+                      gmo.xgrid=seq(-5,5,by=0.001), report.error=FALSE)) # log-odd-ratio
+  
+  #meta8all[[i]]<-summary(gmeta(temp[,c("events_1","total_1","events_2","total_2")], gmi.type='2x2', method='exact1',
+  #                                              gmo.xgrid=seq(-5,5,by=0.001), report.error=TRUE)) # log-odd-ratio
+  ORCI.exact.mean<-round(exp(OR.exact$cmbd$mean),digits=3)  ##1.47
+  ORCI.exact.median<-round(exp(OR.exact$cmbd$median),digits=3)##1.469
+  ORCI.exact.lower<-round(exp(OR.exact$cmbd$ci.lower),digits=3)##0.765
+  ORCI.exact.upper<-round(exp(OR.exact$cmbd$ci.upper),digits=3)##2.965
+  
+  meta1.TE<-round(meta1$fixed$TE,3)###log odds ratio NOte:using the for loop to do analysis for 368 MA, TE are log odds ratio.when only do 1 MA, the output is odds ratio. 
+  
+
+  
+  
+```
+
+##paper case study##
+```{r,echo=FALSE}
+setwd("D:/Biostatistics/MSProject/planB/summary/")
+dat2 <-read.csv("case230f.csv")
+View(dat2) 
+
+dat2D=dat2[,c("events_1","total_1","events_2","total_2")]
+View(dat2D)
+
+ ###meta-analysis##
+  ##without double zero studies##
+  metac1<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", incr=0,method="I",data=dat2D))
+  metac1MH<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", incr=0,method="MH",data=dat2D))
+  metac2<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", method="I",data=dat2D))
+  metac3<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", incr="TACC",method="I",data=dat2D))
+  metac5<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", method="MH",data=dat2D))
+  metac6<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", incr="TACC",method="MH",data=dat2D))
+  metac8<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR",  incr=0, method="P",data=dat2D))
+  ##with double zero studies##
+  #meta1all[[i]]<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", incr=0,allstudies=TRUE,method="I",data=temp))
+  metac2all<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", allstudies=TRUE,method="I",data=dat2D))
+  metac3all<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", incr="TACC",allstudies=TRUE,method="I",data=dat2D))
+  metac5all<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", allstudies=TRUE,method="MH",data=dat2D))
+  metac6all<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", incr="TACC",allstudies=TRUE,method="MH",data=dat2D))
+  
+  metac8all<-summary(gmeta(dat2D[,c("events_1","total_1","events_2","total_2")], gmi.type='2x2', method='exact1',
+                                                gmo.xgrid=seq(-5,5,by=0.001), report.error=TRUE)) # log-odd-ratio
+  
+  
+  case2.mean<-round(exp(metac8all$cmbd$mean),digits=3)  ##0.15
+  case2.median<-round(exp(metac8all$cmbd$median),digits=3)##0.15
+  case2.lower<-round(exp(metac8all$cmbd$ci.lower),digits=3)##0
+  case2.upper<-round(exp(metac8all$cmbd$ci.upper),digits=3)##2.043
+  
+  #meta1.TE<-round(meta1$fixed$TE,3)###log odds ratio NOte:using the for loop to do analysis for 368 MA, TE are log odds ratio.when only do 1 MA, the output is odds ratio. 
+
+######EMP method######
+##add column R=Nc/Ne##
+dat2D$R<-dat2D$total_2/dat2D$total_1
+dat2D$Kc<-dat2D$R/(dat2D$R+0.179)
+dat2D$Ke<-0.179/(dat2D$R+0.179)
+###wodz###
+dat2Dsub<-dat2D[c(3,6,7,8,11),]
+View(dat2Dsub)
+dat2Dsub[,"events_1"]<-dat2Dsub[,"events_1"]+dat2Dsub[,"Ke"]
+dat2Dsub[,"events_2"]<-dat2Dsub[,"events_2"]+dat2Dsub[,"Kc"]
+dat2Dsub[,"total_1"]<-dat2Dsub[,"total_1"]+2*dat2Dsub[,"Ke"]
+dat2Dsub[,"total_2"]<-dat2Dsub[,"total_2"]+2*dat2Dsub[,"Kc"]
+
+meta1EMPwodz<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", incr=0,method="I",data=dat2Dsub))
+meta2EMPwodz<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", incr=0,method="MH",data=dat2Dsub))
+
+####all studies#####
+dat2D[,"events_1"]<-dat2D[,"events_1"]+dat2D[,"Ke"]
+dat2D[,"events_2"]<-dat2D[,"events_2"]+dat2D[,"Kc"]
+dat2D[,"total_1"]<-dat2D[,"total_1"]+2*dat2D[,"Ke"]
+dat2D[,"total_2"]<-dat2D[,"total_2"]+2*dat2D[,"Kc"]
+meta1EMPall<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", incr=0,method="I",data=dat2D))
+meta2EMPall<-summary(metabin(events_1, total_1, events_2, total_2, sm="OR", incr=0,method="MH",data=dat2D))
+
+
+```
+
+
+Bayesian method
+```{r,echo=FALSE}
+library(rjags)
+y0<-dat2$events_2
+n0<-dat2$total_2
+y1<-dat2$events_1
+n1<-dat2$total_1
+
+jags <- jags.model(file = "D:/Biostatistics/MSProject/planB/R/model_r.txt", data = list("S" = length(y0), "y0" = y0, "n0" = n0,"y1"=y1,"n1"=n1),
+                   init = list(delta = 0),
+                   quiet = TRUE)
+burn_in <- 1000
+update(jags, burn_in)
+n_s <- 100000
+pars <- c("delta")
+msamp <- coda.samples(jags, variable.names = pars, n.iter = n_s)
+samp <- msamp[[1]]
+
+CI<-t(apply(samp, 2, quantile, c(0.025, 0.5, 0.975)))
+TE<-mean(samp[, "delta"])
+```
+
